@@ -1,0 +1,633 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+/*
+ ---break---
+ */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Starwaves design tokens.
+ *
+ * The brand palette is taken from the gradient stops in the supplied lockups —
+ * not invented and not extended. The contrast ratios in the comments were
+ * measured; only the two deep blues clear 4.5:1 on white, which is why
+ * `brand-700` and not `brand-500` carries text.
+ *
+ * Everything else here — the neutral ramp, elevation, radii — is chosen, and
+ * chosen to stay out of the way. This is a dense administrative product where
+ * people read tables of names and amounts all day, so the interface aims to be
+ * quiet: one accent colour, restrained borders, and contrast reserved for the
+ * data rather than spent on the chrome.
+ */
+@theme {
+  /* --- Brand, from the lockup gradients ---------------------------------- */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #2e86ef; /* 3.64:1 on white — fills and large type only */
+  --color-brand-500: #2e86ef;
+  --color-brand-600: #2976d3; /* 4.54:1 — safe for text, just              */
+  --color-brand-700: #1274c6; /* 4.84:1 — links and body-weight brand text */
+  --color-brand-800: #0f5fa3;
+  --color-brand-900: #0d4f87;
+
+  --color-violet-400: #817ae0;
+  --color-violet-500: #9c74f0;
+  --color-violet-600: #cc6cf1;
+  --color-accent: #d76bf2; /* 2.89:1 — never body text on light */
+  --color-attention: #ef488d; /* 3.51:1 — never body text on light */
+  --color-coral: #f47166;
+  --color-highlight: #fca635; /* 1.97:1 — fills only */
+
+  /* --- Neutrals ---------------------------------------------------------- */
+  --color-ink: #0f172a; /* 17.85:1 on white — headings, table values */
+  --color-ink-muted: #475569; /*  7.50:1 — secondary text                  */
+  --color-ink-subtle: #64748b; /*  4.76:1 — the lightest still usable       */
+  --color-ink-faint: #94a3b8; /*  2.60:1 — decorative and icons only       */
+  --color-line: #e9edf3;
+  --color-line-strong: #cbd5e1;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #f6f8fb;
+  --color-surface-hover: #f1f5f9;
+
+  /* Dark surfaces. These exist for the two places the identity gradient is used
+     full-bleed — the auth panel and the event masthead — where a scrim is what
+     makes white text legible over the amber end of the sweep. Without it the
+     text sits on a 1.9:1 background. */
+  --color-night: #0b1020;
+  --color-night-raised: #151b2e;
+  --color-night-line: #263049;
+
+  /* --- Status tones ------------------------------------------------------
+     Every status enum in this API maps onto one of these five, so a colour
+     means the same thing on a registration, a payment and an event. */
+  --color-success: #15803d;
+  --color-success-bg: #f0fdf4;
+  --color-success-line: #bbf7d0;
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-warning-line: #fde68a;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-danger-line: #fecaca;
+  --color-info: #1d4ed8;
+  --color-info-bg: #eff6ff;
+  --color-info-line: #bfdbfe;
+
+  /* The organiser-access mark — a card, badge and button all need to read as
+     the same "you manage this" signal at a glance, so it gets the same
+     text/bg/line triad as the status tones above rather than reusing the
+     decorative violet-400/500/600 gradient stops, which are too light for
+     text (same reason `brand-500` is fills-only, not body text). */
+  --color-violet: #6d28d9; /* ~8.6:1 on white — safe for text and fills */
+  --color-violet-bg: #f5f3ff;
+  --color-violet-line: #ddd6fe;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 0.75rem;
+
+  /* Elevation as borders plus a whisper of shadow. On a dense screen, heavy
+     drop shadows turn a table of cards into visual noise. */
+  --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --shadow-raised: 0 4px 12px -2px rgb(15 23 42 / 0.08),
+    0 2px 4px -2px rgb(15 23 42 / 0.04);
+  --shadow-overlay: 0 16px 32px -8px rgb(15 23 42 / 0.16),
+    0 4px 8px -4px rgb(15 23 42 / 0.08);
+
+  /* The identity sweep. Used sparingly — a signature, not a wallpaper. */
+  --gradient-brand: linear-gradient(
+    100deg,
+    #1274c6 0%,
+    #2e86ef 22%,
+    #817ae0 42%,
+    #d76bf2 60%,
+    #ef488d 76%,
+    #f47166 88%,
+    #fca635 100%
+  );
+
+  /* ======================================================================
+   * The showcase site's own layer: "space".
+   *
+   * Everything above is the light system shared with the platform (event
+   * cards, legal text and other reading surfaces keep using it). What follows
+   * is the dark, cosmic side of the Starwaves identity — deep night, starlight
+   * text, nebula glows and the brand's wave of light — for the parts of the
+   * site whose job is to make an impression.
+   *
+   * The night ramp and the light "nova" tints are derived from the lockup
+   * gradient for this site; they are not official brand values. Contrast was
+   * measured on space-900 (#0A0F1F): starlight 17.5:1, muted 10.5:1,
+   * subtle 6.8:1, faint 3.5:1 (decoration only), every nova tint above 7:1.
+   * ====================================================================== */
+  --color-space-950: #060914; /* the hero's sky */
+  --color-space-900: #0a0f1f; /* dark sections */
+  --color-space-800: #111833; /* panels on dark */
+  --color-space-700: #182143; /* raised / hover */
+  --color-space-line: #253058;
+  --color-space-line-strong: #34427a;
+
+  --color-starlight: #f2f5ff; /* headings and body on dark */
+  --color-starlight-muted: #b6c0da; /* secondary text */
+  --color-starlight-subtle: #8e9ab8; /* captions, the lightest readable */
+  --color-starlight-faint: #5d6a8c; /* decoration and icons only */
+
+  /* The brand stops, lifted for text and strokes on the night background. */
+  --color-nova-blue: #5aa2f5;
+  --color-nova-violet: #a79cf0;
+  --color-nova-pink: #f07aae;
+  --color-nova-amber: #fcb65a;
+
+  /* Display face: Unbounded, wide and geometric like the STARWAVES wordmark,
+     for headings only. Body text stays Inter. */
+  --font-display: var(--font-unbounded), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+
+  /* Type scale. Fluid between a 360px phone and a 1440px desktop. */
+  --text-display: clamp(2.35rem, 1.5rem + 3vw, 4rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-h1: clamp(2.1rem, 1.55rem + 2.4vw, 3.75rem);
+  --text-h1--line-height: 1.06;
+  --text-h1--letter-spacing: -0.03em;
+  --text-h2: clamp(1.75rem, 1.35rem + 1.7vw, 2.85rem);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.025em;
+  --text-h3: clamp(1.2rem, 1.1rem + 0.45vw, 1.45rem);
+  --text-h3--line-height: 1.25;
+  --text-lead: clamp(1.06rem, 0.98rem + 0.4vw, 1.3rem);
+  --text-lead--line-height: 1.6;
+
+  /* Layout. */
+  --container-site: 80rem;
+  --container-prose: 42rem;
+
+  /* Radii, by rank: pills, panels, cards, controls. */
+  --radius-panel: 1.5rem;
+  --radius-control: 0.625rem;
+
+  /* Glows replace shadows on the night background. */
+  --shadow-glow-blue: 0 0 0 1px rgb(90 162 245 / 0.25),
+    0 10px 40px -10px rgb(46 134 239 / 0.55);
+  --shadow-glow-pink: 0 0 0 1px rgb(240 122 174 / 0.25),
+    0 10px 40px -10px rgb(239 72 141 / 0.5);
+  --shadow-panel: 0 1px 0 0 rgb(255 255 255 / 0.04) inset,
+    0 24px 60px -30px rgb(0 0 0 / 0.8);
+
+  /* Motion, as theme variables so utilities like `duration-*` and `ease-*`
+     can use them; `lib/motion.ts` mirrors them for Motion for React. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --animate-twinkle: twinkle 6s ease-in-out infinite;
+  --animate-drift: drift 24s ease-in-out infinite alternate;
+  --animate-drift-slow: drift 36s ease-in-out infinite alternate-reverse;
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes drift {
+    from {
+      transform: translate3d(-3%, -2%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(3%, 2%, 0) scale(1.08);
+    }
+  }
+}
+
+/* Motion timings for CSS that is not a utility. */
+:root {
+  --dur-fast: 150ms; /* hover, press */
+  --dur-base: 240ms; /* menus, small state changes */
+  --dur-reveal: 700ms; /* section reveals */
+  --stagger: 70ms;
+  --reveal-distance: 16px;
+}
+
+:root {
+  color-scheme: light;
+  /*
+   * shadcn/ui's own tokens, mapped onto the Starwaves palette above rather
+   * than left at the generic Nova-preset grays — a shadcn `Button` and this
+   * app's own `buttonClass("primary")` must render the same brand blue, not
+   * two different products sharing a page. `--primary` uses `brand-600`, not
+   * `brand-500`: the READMEs contrast table only clears 4.5:1 from there up.
+   */
+  --background: var(--color-surface);
+  --foreground: var(--color-ink);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-brand-600);
+  --primary-foreground: #ffffff;
+  --secondary: var(--color-surface-hover);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-surface-sunken);
+  --muted-foreground: var(--color-ink-muted);
+  --accent: var(--color-brand-50);
+  --accent-foreground: var(--color-brand-700);
+  --destructive: var(--color-danger);
+  --border: var(--color-line);
+  --input: var(--color-line-strong);
+  --ring: var(--color-brand-500);
+  --chart-1: var(--color-brand-600);
+  --chart-2: var(--color-violet-500);
+  --chart-3: var(--color-accent);
+  --chart-4: var(--color-coral);
+  --chart-5: var(--color-highlight);
+  --radius: var(--radius-card);
+  --sidebar: var(--color-surface);
+  --sidebar-foreground: var(--color-ink);
+  --sidebar-primary: var(--color-brand-600);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-brand-50);
+  --sidebar-accent-foreground: var(--color-brand-700);
+  --sidebar-border: var(--color-line);
+  --sidebar-ring: var(--color-brand-500);
+}
+
+body {
+  background: var(--color-surface-sunken);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* French sets a lot of accented capitals; leave room rather than cropping
+     them with a tight line-height. */
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Money and identifiers line up only with tabular figures. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* A visible focus ring on everything interactive. Defined once so it cannot be
+   quietly dropped per component — removing outlines is the single most common
+   accessibility regression. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+/*
+ ---break---
+ */
+@theme inline {
+  /* No font here: `--font-sans: var(--font-sans)` (shadcn's default) is a
+     self-reference that resolves to nothing and silently dropped Inter. */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+/*
+ ---break---
+ */
+/*
+ ---break---
+ */
+@layer base {
+  /* Only the border/ring default. `body`'s background, colour and font are
+     the plain (un-layered) rule above, which already wins the cascade over
+     anything in `@layer base` — restating it here would be two answers to
+     the same question, one of them invisible. */
+  * {
+    @apply border-border outline-ring/50;
+  }
+}
+/* ==========================================================================
+ * Space: the showcase site's dark layer.
+ * ========================================================================== */
+
+/* The page column: one width, one gutter, everywhere. */
+@utility container-site {
+  width: 100%;
+  max-width: var(--container-site);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 0.6rem + 2.6vw, 3rem);
+}
+
+/* Vertical rhythm between sections. */
+@utility section-y {
+  padding-block: clamp(4.5rem, 3rem + 6vw, 9rem);
+}
+
+/* The brand's sweep as a one-pixel line of light. */
+@utility hairline-brand {
+  height: 1px;
+  background: var(--gradient-brand);
+}
+
+/* Text set in the display face. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-feature-settings: "ss01";
+}
+
+/*
+ * Component classes live in a layer below the utilities, so a utility on the
+ * same element wins — `bg-space-950` on a `.theme-space` section, or
+ * `opacity-35` on a `.starfield`, does what it says.
+ */
+@layer components {
+  /* A dark section: night background, starlight text, its own focus colour. */
+  .theme-space {
+    background-color: var(--color-space-900);
+    color: var(--color-starlight-muted);
+    color-scheme: dark;
+  }
+  .theme-space :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline-color: var(--color-nova-blue);
+  }
+
+  /*
+   * A starry sky, painted rather than computed: three tiled layers of
+   * one-pixel stars at different densities, the nearest one twinkling. No
+   * canvas, no script — it costs a background image and one opacity animation.
+   */
+  .starfield {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, rgb(242 245 255 / 0.9), transparent),
+      radial-gradient(1px 1px at 140px 80px, rgb(242 245 255 / 0.7), transparent),
+      radial-gradient(1.5px 1.5px at 90px 160px, rgb(167 156 240 / 0.8), transparent),
+      radial-gradient(1px 1px at 200px 210px, rgb(242 245 255 / 0.6), transparent),
+      radial-gradient(1px 1px at 260px 40px, rgb(90 162 245 / 0.8), transparent);
+    background-size: 300px 260px;
+    opacity: 0.7;
+  }
+  .starfield::before,
+  .starfield::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .starfield::before {
+    background-image:
+      radial-gradient(1px 1px at 60px 120px, rgb(242 245 255 / 0.55), transparent),
+      radial-gradient(1px 1px at 310px 60px, rgb(242 245 255 / 0.45), transparent),
+      radial-gradient(1px 1px at 420px 300px, rgb(240 122 174 / 0.6), transparent),
+      radial-gradient(1px 1px at 180px 380px, rgb(242 245 255 / 0.5), transparent);
+    background-size: 480px 440px;
+  }
+  .starfield::after {
+    background-image:
+      radial-gradient(2px 2px at 110px 90px, rgb(242 245 255 / 0.95), transparent),
+      radial-gradient(2px 2px at 520px 260px, rgb(252 182 90 / 0.85), transparent),
+      radial-gradient(1.5px 1.5px at 340px 470px, rgb(90 162 245 / 0.9), transparent);
+    background-size: 640px 560px;
+  }
+  /*
+   * The nearest stars twinkle only on a first screen (`.starfield-twinkle`).
+   * An endless animation keeps its layer — the size of the whole section — in
+   * graphics memory and makes everything drawn over it a layer too; on a
+   * phone, every section twinkling cost hundreds of megabytes for an effect
+   * no one sees below the fold.
+   */
+  .starfield-twinkle::after {
+    animation: var(--animate-twinkle);
+  }
+}
+
+/*
+ * Nebula glows: large soft colour fields. Those of a first screen drift very
+ * slowly (`animate-drift`); the others stay still. No `will-change`: a
+ * permanent layer per glow, each the size of a room, is memory the page does
+ * not need.
+ */
+.nebula {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  opacity: 0.55;
+}
+/*
+ * On phones and tablets the sky holds still: the glows do not drift, the
+ * stars do not twinkle and no pulse runs along the wave (it still draws itself
+ * in on arrival). Same picture, no endless redraws on a battery.
+ */
+@media (hover: none), (max-width: 1023px) {
+  .nebula,
+  .starfield-twinkle::after {
+    animation: none !important;
+  }
+  .wave-pulse {
+    display: none;
+  }
+}
+
+/* Once the first screen has scrolled away, its endless effects pause. */
+[data-offscreen] .starfield-twinkle::after,
+[data-offscreen] .wave-pulse,
+[data-offscreen] .nebula {
+  animation-play-state: paused;
+}
+
+/* The header's line of light under the current section draws itself in. */
+.nav-line {
+  transform-origin: center;
+  animation: nav-line-in var(--dur-reveal) var(--ease-out-expo) both;
+}
+@keyframes nav-line-in {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+/*
+ * The wave of light — the logo's swoosh drawn across the sky. It draws itself
+ * once on arrival, then a pulse of light runs along it from time to time.
+ */
+.wave-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: wave-draw 1.6s var(--ease-out-expo) 0.15s forwards;
+}
+.wave-pulse {
+  stroke-dasharray: 0.08 1;
+  stroke-dashoffset: 1.08;
+  animation: wave-pulse 7s var(--ease-standard) 1.8s infinite;
+}
+@keyframes wave-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes wave-pulse {
+  0% {
+    stroke-dashoffset: 1.08;
+  }
+  60%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/*
+ * The formats band under the hero: outlined capitals, so the words read as
+ * light drawn on the night rather than a second headline.
+ */
+.band-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(182 192 218 / 0.5);
+}
+@supports not (-webkit-text-stroke: 1px black) {
+  .band-outline {
+    color: rgb(182 192 218 / 0.35);
+  }
+}
+
+/*
+ * The journey's step numbers light up as the line of light reaches them
+ * (`data-lit`, set by `JourneyRail`), and dim again if the reader goes back.
+ */
+.journey-dot {
+  transition:
+    border-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard),
+    box-shadow var(--dur-reveal) var(--ease-out-expo);
+}
+[data-lit] > .journey-dot {
+  border-color: rgb(167 156 240 / 0.85);
+  color: var(--color-starlight);
+  box-shadow:
+    0 0 0 4px rgb(167 156 240 / 0.12),
+    0 0 22px rgb(129 122 224 / 0.45);
+}
+
+/*
+ * The hero's entrance, in CSS so it runs without JavaScript: each element
+ * carries `--enter` (its place in the sequence) and rises into view in turn.
+ * The content is in the HTML from the first byte; only its arrival is staged.
+ */
+.enter {
+  /* `sw-rise`, not `enter`: tw-animate-css owns a keyframe called `enter`
+     (the menus use it) and a second one by that name replaced it. */
+  animation: sw-rise var(--dur-reveal) var(--ease-out-expo) both;
+  animation-delay: calc(0.35s + var(--enter, 0) * 0.11s);
+}
+@keyframes sw-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--reveal-distance), 0);
+  }
+}
+.glow-in {
+  animation: glow-in 1.4s var(--ease-out-expo) 0.25s both;
+}
+@keyframes glow-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(6px);
+  }
+}
+
+/*
+ * Scroll reveals. Hidden only when the block has armed itself (it started
+ * below the screen and its script ran), so a page whose script never runs
+ * still shows everything.
+ */
+[data-reveal][data-armed]:not([data-revealed]) {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-distance), 0);
+}
+[data-reveal] {
+  transition:
+    opacity var(--dur-reveal) var(--ease-out-expo),
+    transform var(--dur-reveal) var(--ease-out-expo);
+  transition-delay: calc(var(--reveal-index, 0) * var(--stagger));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal][data-armed]:not([data-revealed]) {
+    opacity: 1;
+    transform: none;
+  }
+  .wave-draw {
+    stroke-dashoffset: 0;
+  }
+  .wave-pulse {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* The global rule shortens animations but keeps their delays: drop the
+     staged entrance entirely so nothing waits to appear. */
+  .enter,
+  .glow-in,
+  .starfield-twinkle::after,
+  .nav-line,
+  .nebula {
+    animation: none !important;
+  }
+}
